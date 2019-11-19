@@ -1,0 +1,319 @@
+#include <iostream>
+#include <string>
+#include <algorithm> 
+using namespace std;
+
+struct Info //Struct for name and weight values
+{
+	string name;
+	double weight;
+};
+
+struct Node
+{
+	Info info;
+	Node* left;
+	Node* right;
+
+	Node(Info info)
+	{
+		this->info = info;
+		this->left = NULL;
+		this->right = NULL;
+	}
+};
+
+class BST
+{
+public:
+
+	BST();
+	void createTree();
+	void addInfo(Info info);
+	void printPreorder();
+	void printInorder();
+	void printPostorder();
+	int getHeight();
+	int getNumberOfLeaves();
+	double searchName(string name);
+	double getLowestWeight();
+	string getFirstNameInOrder();
+
+private:
+
+	Node* root;
+	void add_info(Node* node, Info info);
+	void preorderAlg(Node* node);
+	void inorderAlg(Node* node);
+	void postorderAlg(Node* node);
+	int heightAlg(Node* node);
+	int leavesAlg(Node* node);
+	double searchHelper(Node* node, string name);
+	double lowestWeightAlg(Node* node, double weight);
+	string nameInOrderAlg(Node* node);
+};
+
+// default constructor
+BST::BST()
+{
+	root = NULL;
+}
+
+void BST::createTree()
+{
+	string name;
+	double weight;
+
+	cout << "Type 'start' when all entries are complete" "\nEnter name: ";
+	cin >> name;
+
+	while (name.compare("start") != 0)
+	{
+		cout << "Enter weight: ";
+		cin >> weight;
+
+		Info info;
+		info.name = name;
+		info.weight = weight;
+
+		addInfo(info);
+
+		cout << "\nEnter name: ";
+		cin >> name;
+	}
+}
+
+// addInfo function implementation
+void BST::addInfo(Info info)
+{
+	if (root == NULL)
+	{
+		root = new Node(info);
+	}
+	else
+	{
+		add_info(root, info);
+	}
+}
+
+// printPreorder function implementation
+void BST::BST::printPreorder()
+{
+	cout << "\nPreorder traversal:" << endl;
+	cout << "Name" << "\t" << "Weight" << endl;
+	if (root == NULL)
+		cout << "Tree is empty!" << endl;
+	else
+		preorderAlg(root);
+}
+
+// printInorder function implementation
+void BST::printInorder()
+{
+	cout << "\nInorder traversal:" << endl;
+	cout << "Name" << "\t" << "Weight" << endl;
+	if (root == NULL)
+		cout << "Tree is empty!" << endl;
+	else
+		inorderAlg(root);
+}
+
+// printPostorder function implementation
+void BST::printPostorder()
+{
+	cout << "\nPostorder traversal:" << endl;
+	cout << "Name" << "\t" << "Weight" << endl;
+	if (root == NULL)
+		cout << "Tree is empty!" << endl;
+	else
+		postorderAlg(root);
+}
+
+// getHeight function implementation
+int BST::getHeight()
+{
+	return heightAlg(root);
+}
+
+// getNumberOfLeaves function implementation
+int BST::getNumberOfLeaves()
+{
+	return leavesAlg(root);
+}
+
+// searchName function implementation
+double BST::searchName(string name)
+{
+	return searchHelper(root, name);
+}
+
+// getLowestWeight function implementation
+double BST::getLowestWeight()
+{
+	if (root == NULL)
+		return 0;
+	else
+		return lowestWeightAlg(root, root->info.weight);
+}
+
+// getFirstNameInOrder function implementation
+string BST::getFirstNameInOrder()
+{
+	if (root == NULL)
+		return "Tree is empty!";
+	else
+		return nameInOrderAlg(root);
+}
+
+// addHelper function implementation
+void BST::add_info(Node* node, Info info)
+{
+	if ((node->info.name).compare(info.name) > 0)
+	{
+		if (node->left == NULL)
+		{
+			node->left = new Node(info);
+		}
+		else
+		{
+			add_info(node->left, info);
+		}
+	}
+	else if ((node->info.name).compare(info.name) < 0)
+	{
+		if (node->right == NULL)
+		{
+			node->right = new Node(info);
+		}
+		else
+		{
+			add_info(node->right, info);
+		}
+	}
+
+}
+
+// preorderHelper function implementation
+void BST::preorderAlg(Node* node)
+{
+	if (node != NULL)
+	{
+		cout << node->info.name << "\t" << node->info.weight << endl;
+		preorderAlg(node->left);
+		preorderAlg(node->right);
+	}
+}
+
+// inorderHelper function implementation
+void BST::inorderAlg(Node* node)
+{
+	if (node != NULL)
+	{
+		inorderAlg(node->left);
+		cout << node->info.name << "\t" << node->info.weight << endl;
+		inorderAlg(node->right);
+	}
+}
+
+// postorderHelper function implementation
+void BST::postorderAlg(Node* node)
+{
+	if (node != NULL)
+	{
+		postorderAlg(node->left);
+		postorderAlg(node->right);
+		cout << node->info.name << "\t" << node->info.weight << endl;
+	}
+}
+
+// heightHelper function implementation
+int BST::heightAlg(Node* node)
+{
+	if (node == NULL)
+	{
+		return 0;
+	}
+	else
+	{
+		return 1 + max(heightAlg(node->left), heightAlg(node->right));
+	}
+}
+
+// numberOfLeavesHelper function implementation
+int BST::leavesAlg(Node* node)
+{
+	if (node == NULL)
+		return 0;
+	if (node->left == NULL && node->right == NULL)
+		return 1;
+	else
+		return leavesAlg(node->left) + leavesAlg(node->right);
+}
+
+// searchHelper function implementation
+double BST::searchHelper(Node* node, string name)
+{
+	if (node == NULL) // not existed
+		return 0.0;
+	else if ((node->info.name).compare(name) > 0)
+		return searchHelper(node->left, name);
+	else if ((node->info.name).compare(name) < 0)
+		return searchHelper(node->right, name);
+	else
+		return node->info.weight; // existed
+}
+
+// lowestWeightHelper function implementation
+double BST::lowestWeightAlg(Node* node, double weight)
+{
+	if (node == NULL)
+	{
+		return weight;
+	}
+	else
+	{
+		return min(min(node->info.weight, lowestWeightAlg(node->left, node->info.weight)), min(node->info.weight, lowestWeightAlg(node->right, node->info.weight)));
+	}
+}
+
+// firstNameInOrderHelper function implementation
+string BST::nameInOrderAlg(Node* node)
+{
+	if (node->left == NULL)
+		return node->info.name;
+	else
+		return nameInOrderAlg(node->left);
+}
+
+
+// main function
+int main()
+{
+	BST tree;
+
+	tree.createTree();
+
+	tree.printPreorder();
+
+	tree.printInorder();
+
+	tree.printPostorder();
+
+	cout << "\nHeight of the tree: " << tree.getHeight() << endl;
+
+	cout << "\nNumber of leaves in the tree: " << tree.getNumberOfLeaves() << endl << endl;
+
+	string name = "Steve";
+	double weight = tree.searchName(name);
+	if (weight == 0.0)
+		cout << name << " is not existed in the tree." << endl;
+	else
+		cout << name << " is existed in the tree and his/her weight is " << weight << endl;
+
+	cout << "\nLowest weight contained in the tree: " << tree.getLowestWeight() << endl;
+
+	cout << "\nFirst name in the tree in alphabetical order: " << tree.getFirstNameInOrder() << endl;
+
+
+	return 0;
+}
